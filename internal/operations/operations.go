@@ -29,7 +29,7 @@ func GetFiles(folder string, values map[string]File) error {
 
 		values[d.Name()] = File{
 			Name: d.Name(),
-			Path: filepath.Join(folder, d.Name()),
+			Path: path,
 			Size: info.Size(),
 		}
 
