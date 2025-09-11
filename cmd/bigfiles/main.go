@@ -1,27 +1,65 @@
 package main
 
 import (
+	"flag"
+	"fmt"
+	"os"
+
 	"github.com/kamildemocko/bigfiles/internal/operations"
 	"github.com/kamildemocko/bigfiles/internal/printer"
 )
 
-func main() {
-	limit := 5
-	folder := `D:\Google Drive\Docs\fonts\`
-	values := make(map[string]operations.File)
+var (
+	rootPath string
+	limit    int
+)
 
-	err := operations.GetFiles(folder, values)
+func init() {
+	flag.StringVar(&rootPath, "d", "", "set root directory")
+	flag.IntVar(&limit, "l", 5, "set max shown files")
+	flag.Parse()
+}
+
+func parseInputDir() (string, error) {
+	var folder string
+	var err error
+
+	if rootPath == "" {
+		folder, err = os.Getwd()
+		if err != nil {
+			return "", fmt.Errorf("cannot get current directory")
+		}
+	} else {
+		folder = rootPath
+	}
+	_, err = os.Stat(folder)
+	if err != nil {
+		return "", fmt.Errorf("directory not found")
+	}
+
+	return folder, nil
+}
+
+func main() {
+	folder, err := parseInputDir()
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	allFiles := make(map[string]operations.File)
+
+	err = operations.GetFiles(folder, allFiles)
 	if err != nil {
 		panic(err)
 	}
 
-	sorted := operations.SortFilesBySize(values, false)
+	sorted := operations.SortFilesBySize(allFiles, false)
 
 	limitedAndSorted := sorted[:limit]
 
 	p := printer.NewPrinter(folder)
 	for _, sortedKey := range limitedAndSorted {
-		row := values[sortedKey]
+		row := allFiles[sortedKey]
 		p.PrintResultRow(row)
 	}
 }
