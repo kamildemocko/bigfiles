@@ -15,7 +15,7 @@ var (
 )
 
 func init() {
-	flag.StringVar(&rootPath, "d", "", "set root directory")
+	flag.StringVar(&rootPath, "d", "", "set root directory, if ommited CWD will be used")
 	flag.IntVar(&limit, "l", 5, "set max shown files")
 	flag.Parse()
 }
