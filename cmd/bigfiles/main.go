@@ -4,6 +4,8 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"path/filepath"
+	"strings"
 
 	"github.com/kamildemocko/bigfiles/internal/operations"
 	"github.com/kamildemocko/bigfiles/internal/printer"
@@ -15,15 +17,27 @@ var (
 )
 
 func init() {
-	flag.StringVar(&rootPath, "d", "", "set root directory, if ommited CWD will be used")
+	flag.Usage = func() {
+		fmt.Fprintf(os.Stderr, "Usage: %s [OPTIONS] [DIRECTORY]\n\n", filepath.Base(os.Args[0]))
+		fmt.Fprintf(os.Stderr, "If DIRECTORY is not specified, the current directory will be used.\n\n")
+		fmt.Fprintf(os.Stderr, "Options:\n")
+		flag.PrintDefaults()
+	}
+
 	flag.IntVar(&limit, "l", 5, "set max shown files")
 	flag.Parse()
+
+	if len(flag.Args()) > 0 {
+		argPath := flag.Args()
+		rootPath = strings.Join(argPath, " ")
+	}
 }
 
 func parseInputDir() (string, error) {
 	var folder string
 	var err error
 
+	fmt.Println(rootPath)
 	if rootPath == "" {
 		folder, err = os.Getwd()
 		if err != nil {
