@@ -2,6 +2,7 @@ package printer
 
 import (
 	"fmt"
+	"path/filepath"
 	"strings"
 
 	"github.com/fatih/color"
@@ -28,6 +29,7 @@ func (p *Printer) PrintResultRow(row operations.File) {
 	red.Printf("[ %s ] ", prettyPrintSize(row.Size))
 	white.Printf("%s", row.Name)
 	path := strings.Replace(row.Path, p.Dir, "", 1)
+	path = filepath.Dir(path)
 	gray.Printf(" » %s\n", path)
 }
 
