@@ -38,7 +38,6 @@ func parseInputDir() (string, error) {
 	var folder string
 	var err error
 
-	fmt.Println(rootPath)
 	if rootPath == "" {
 		folder, err = os.Getwd()
 		if err != nil {
@@ -70,11 +69,18 @@ func main() {
 
 	err = operations.GetFiles(folder, allFiles)
 	if err != nil {
-		panic(err)
+		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+		os.Exit(1)
 	}
 
 	sorted := operations.SortFilesBySize(allFiles, false)
-
+	if len(sorted) == 0 {
+		fmt.Println("no files in folder")
+		os.Exit(0)
+	}
+	if limit > len(sorted) {
+		limit = len(sorted)
+	}
 	limitedAndSorted := sorted[:limit]
 
 	p := printer.NewPrinter(folder)
