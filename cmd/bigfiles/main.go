@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/fatih/color"
 	"github.com/kamildemocko/bigfiles/internal/operations"
 	"github.com/kamildemocko/bigfiles/internal/printer"
 )
@@ -46,9 +47,14 @@ func parseInputDir() (string, error) {
 	} else {
 		folder = rootPath
 	}
-	_, err = os.Stat(folder)
+	info, err := os.Stat(folder)
 	if err != nil {
-		return "", fmt.Errorf("directory not found")
+		return "", fmt.Errorf("invalid directory")
+	}
+	if !info.IsDir() {
+		gray := color.New(color.FgHiBlack)
+		gray.Printf("this is a file, using parent directory instead\n\n")
+		folder = filepath.Dir(folder)
 	}
 
 	return folder, nil
