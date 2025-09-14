@@ -53,7 +53,7 @@ func parseInputDir() (string, error) {
 	}
 	if !info.IsDir() {
 		gray := color.New(color.FgHiBlack)
-		gray.Printf("this is a file, using parent directory instead\n\n")
+		gray.Print("this is a file, using parent directory instead\n\n")
 		folder = filepath.Dir(folder)
 	}
 

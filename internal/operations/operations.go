@@ -4,6 +4,8 @@ import (
 	"io/fs"
 	"path/filepath"
 	"sort"
+
+	"github.com/fatih/color"
 )
 
 type File struct {
@@ -13,6 +15,9 @@ type File struct {
 }
 
 func GetFiles(folder string, values map[string]File) error {
+	gray := color.New(color.FgHiBlack)
+	gray.Print("scanning files...\n\n")
+
 	err := filepath.WalkDir(folder, func(path string, d fs.DirEntry, err error) error {
 		if err != nil {
 			return err
