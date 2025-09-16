@@ -25,7 +25,7 @@ func GetFiles(folder string, values map[string]File) error {
 
 		info, err := d.Info()
 		if err != nil {
-			return err
+			return nil
 		}
 
 		if d.IsDir() {
