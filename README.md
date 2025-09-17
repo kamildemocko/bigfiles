@@ -7,6 +7,7 @@ A simple Go utility to find and list the largest files in a directory.
 Bigfiles scans a specified directory recursively and displays the largest files sorted by size in descending order.  
 It provides a user-friendly output with the file size in human-readable format, file name, and relative path.  
 If file is provided, it scans parent directory
+It doesn't hog the memorry by keeping only files needed for showing result
 
 ## Installation
 

@@ -43,17 +43,19 @@ func GetFiles(folder string, values map[string]File, limit int) error {
 			smallestKey, smallestSize = findNewSmallest(values)
 		}
 
+		name, size := d.Name(), info.Size()
+
 		// add new value
 		values[d.Name()] = File{
-			Name: d.Name(),
+			Name: name,
 			Path: path,
-			Size: info.Size(),
+			Size: size,
 		}
 
 		// change smallest vars if needed
-		if info.Size() < smallestSize || smallestKey == "" {
-			smallestKey = d.Name()
-			smallestSize = info.Size()
+		if size < smallestSize || smallestKey == "" {
+			smallestKey = name
+			smallestSize = size
 		}
 
 		return err
