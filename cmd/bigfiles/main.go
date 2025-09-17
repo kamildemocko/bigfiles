@@ -65,9 +65,9 @@ func main() {
 		fmt.Println(err)
 		return
 	}
-	allFiles := make(map[string]operations.File)
+	allFiles := make(map[string]operations.File, limit)
 
-	err = operations.GetFiles(folder, allFiles)
+	err = operations.GetFiles(folder, allFiles, limit)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
 		os.Exit(1)
