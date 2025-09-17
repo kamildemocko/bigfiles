@@ -70,12 +70,10 @@ func findNewSmallest(values map[string]File) (string, int64) {
 	var minSizeKey = ""
 
 	for key, value := range values {
-		if value.Size > minSize {
-			continue
+		if value.Size < minSize {
+			minSize = value.Size
+			minSizeKey = key
 		}
-
-		minSize = value.Size
-		minSizeKey = key
 	}
 
 	return minSizeKey, minSize
