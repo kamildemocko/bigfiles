@@ -14,9 +14,12 @@ type File struct {
 	Size int64
 }
 
-func GetFiles(folder string, values map[string]File) error {
+func GetFiles(folder string, values map[string]File, limit int) error {
 	gray := color.New(color.FgHiBlack)
 	gray.Print("scanning files...\n\n")
+
+	var smallestKey string
+	var smallestSize int64
 
 	err := filepath.WalkDir(folder, func(path string, d fs.DirEntry, err error) error {
 		if err != nil {
@@ -32,10 +35,25 @@ func GetFiles(folder string, values map[string]File) error {
 			return nil
 		}
 
+		if len(values) >= limit {
+			// remove smallest from map
+			delete(values, smallestKey)
+
+			// set next smallest
+			smallestKey, smallestSize = findNewSmallest(values)
+		}
+
+		// add new value
 		values[d.Name()] = File{
 			Name: d.Name(),
 			Path: path,
 			Size: info.Size(),
+		}
+
+		// change smallest vars if needed
+		if info.Size() < smallestSize || smallestKey == "" {
+			smallestKey = d.Name()
+			smallestSize = info.Size()
 		}
 
 		return err
@@ -45,6 +63,22 @@ func GetFiles(folder string, values map[string]File) error {
 	}
 
 	return nil
+}
+
+func findNewSmallest(values map[string]File) (string, int64) {
+	var minSize int64 = 9223372036854775807
+	var minSizeKey = ""
+
+	for key, value := range values {
+		if value.Size > minSize {
+			continue
+		}
+
+		minSize = value.Size
+		minSizeKey = key
+	}
+
+	return minSizeKey, minSize
 }
 
 func SortFilesBySize(values map[string]File, asc bool) []string {
