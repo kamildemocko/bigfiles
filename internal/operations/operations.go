@@ -20,7 +20,7 @@ func GetFiles(folder string, values map[string]File) error {
 
 	err := filepath.WalkDir(folder, func(path string, d fs.DirEntry, err error) error {
 		if err != nil {
-			return err
+			return nil
 		}
 
 		info, err := d.Info()
