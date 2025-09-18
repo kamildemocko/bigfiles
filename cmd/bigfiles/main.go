@@ -65,7 +65,7 @@ func main() {
 		fmt.Println(err)
 		return
 	}
-	allFiles := make(map[string]operations.File, limit)
+	allFiles := make(map[string]operations.File, limit+1)
 
 	err = operations.GetFiles(folder, allFiles, limit)
 	if err != nil {

@@ -35,27 +35,23 @@ func GetFiles(folder string, values map[string]File, limit int) error {
 			return nil
 		}
 
-		if len(values) >= limit {
-			// remove smallest from map
-			delete(values, smallestKey)
-
-			// set next smallest
-			smallestKey, smallestSize = findNewSmallest(values)
-		}
-
 		name, size := d.Name(), info.Size()
 
-		// add new value
 		values[d.Name()] = File{
 			Name: name,
 			Path: path,
 			Size: size,
 		}
 
-		// change smallest vars if needed
-		if size < smallestSize || smallestKey == "" {
+		if size < smallestSize {
 			smallestKey = name
 			smallestSize = size
+		}
+
+		if len(values) > limit {
+			delete(values, smallestKey)
+
+			smallestKey, smallestSize = findNewSmallest(values)
 		}
 
 		return err
