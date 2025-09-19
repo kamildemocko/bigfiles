@@ -10,6 +10,7 @@ import (
 	"github.com/fatih/color"
 	"github.com/kamildemocko/bigfiles/internal/operations"
 	"github.com/kamildemocko/bigfiles/internal/printer"
+	"github.com/kamildemocko/bigfiles/internal/tools"
 )
 
 var (
@@ -66,11 +67,30 @@ func main() {
 		return
 	}
 	allFiles := make(map[string]operations.File, limit+1)
+	done := make(chan bool)
+	errCh := make(chan error)
 
-	err = operations.GetFiles(folder, allFiles, limit)
-	if err != nil {
+	spinner := tools.NewSpinner()
+	spinner.Start()
+
+	go func() {
+		err = operations.GetFiles(folder, allFiles, limit)
+		if err != nil {
+			errCh <- err
+			return
+		}
+		done <- true
+	}()
+
+	select {
+	case err := <-errCh:
+		spinner.Stop()
+		fmt.Printf("\r")
 		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
 		os.Exit(1)
+	case <-done:
+		fmt.Printf("\r")
+		spinner.Stop()
 	}
 
 	sorted := operations.SortFilesBySize(allFiles, false)
