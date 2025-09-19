@@ -16,7 +16,7 @@ type File struct {
 
 func GetFiles(folder string, values map[string]File, limit int) error {
 	gray := color.New(color.FgHiBlack)
-	gray.Print("scanning files...\n\n")
+	gray.Print("\rscanning files...\n\n")
 
 	var smallestKey string
 	var smallestSize int64
