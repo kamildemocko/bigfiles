@@ -1,20 +1,20 @@
 package tools
 
-type Cycler struct {
+type cycler struct {
 	elements []string
 	index    int
 }
 
-func NewCycler() Cycler {
+func newCycler() *cycler {
 	elements := []string{"-", "\\", "|", "/"}
 
-	return Cycler{
+	return &cycler{
 		elements: elements,
 		index:    0,
 	}
 }
 
-func (c *Cycler) Next() string {
+func (c *cycler) Next() string {
 	el := c.elements[c.index]
 	c.index = (c.index + 1) % len(c.elements)
 

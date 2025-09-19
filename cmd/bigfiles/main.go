@@ -6,7 +6,6 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
-	"time"
 
 	"github.com/fatih/color"
 	"github.com/kamildemocko/bigfiles/internal/operations"
@@ -67,29 +66,31 @@ func main() {
 		fmt.Println(err)
 		return
 	}
-	cycler := tools.NewCycler()
-	stopCycler := false
 	allFiles := make(map[string]operations.File, limit+1)
 	done := make(chan bool)
+	errCh := make(chan error)
+
+	spinner := tools.NewSpinner()
+	spinner.Start()
 
 	go func() {
 		err = operations.GetFiles(folder, allFiles, limit)
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "Error: %v\n", err)
-			os.Exit(1)
+			errCh <- err
+			return
 		}
 		done <- true
 	}()
 
-	for !stopCycler {
-		select {
-		case <-done:
-			fmt.Printf("\r")
-			stopCycler = true
-		default:
-			fmt.Printf("\r%s", cycler.Next())
-			time.Sleep(130 * time.Millisecond)
-		}
+	select {
+	case err := <-errCh:
+		spinner.Stop()
+		fmt.Printf("\r")
+		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+		os.Exit(1)
+	case <-done:
+		fmt.Printf("\r")
+		spinner.Stop()
 	}
 
 	sorted := operations.SortFilesBySize(allFiles, false)
